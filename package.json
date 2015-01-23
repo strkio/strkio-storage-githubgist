@@ -1,0 +1,38 @@
+{
+  "name": "strkio-storage-githubgist",
+  "description": "GitHub Gist as a strk.io storage",
+  "version": "0.1.0",
+  "author": "Stanley Shyiko <stanley.shyiko@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/strkio/strkio-storage-githubgist"
+  },
+  "main": "./src/GitHubGist",
+  "scripts": {
+    "jscs": "./node_modules/jscs/bin/jscs src/ test/",
+    "jshint": "./node_modules/jshint/bin/jshint --config .jshintrc --reporter node_modules/jshint-stylish/stylish.js src/ test/",
+    "lint": "npm run jscs && npm run jshint",
+    "test": "./node_modules/mocha/bin/mocha -R spec",
+    "validate": "npm run lint && npm run test",
+    "browserify": "todo: stab all require calls"
+  },
+  "dependencies": {
+    "superagent": "^0.21.0",
+    "json-stable-stringify": "^1.0.0"
+  },
+  "devDependencies": {
+    "jscs": "^1.10.0",
+    "jshint": "^2.5.11",
+    "jshint-stylish": "^1.0.0",
+    "mocha": "^2.0.1",
+    "chai": "^1.10.0",
+    "restify": "^2.8.3"
+  },
+  "engines": {
+    "node": ">=0.10"
+  },
+  "keywords": [
+    "strkio"
+  ]
+}
