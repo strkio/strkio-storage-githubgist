@@ -73,6 +73,7 @@ GitHubGist.prototype._syncRemote = function (callback) {
       .set('Accept', 'application/vnd.github.v3+json')
       .set('Authorization', self._authorization)
       .end(function (err, res) {
+        self.data._removed = null;
         if (err || res.error) {
           return callback(err || res.error);
         }
@@ -180,7 +181,7 @@ GitHubGist.prototype.parse = function (res, callback) {
   }());
 };
 
-GitHubGist.prototype.toJSON = function (o) {
+GitHubGist.prototype.toJSON = function () {
   var data = this.data;
   var json = {
     description: 'strkio::set',
@@ -190,6 +191,9 @@ GitHubGist.prototype.toJSON = function (o) {
     json.files[streak.name] = {
       content: stringify(streak)
     };
+  });
+  data._removed && data._removed.forEach(function (streakName) {
+    json.files[streakName] = null;
   });
   var meta = {};
   data.version && (meta.version = data.version);
@@ -331,13 +335,14 @@ function patch(streak, diff) {
 
 GitHubGist.prototype.patch = function (diff) {
   var streaks = this.data.streaks;
+  var removed = this.data._removed || (this.data._removed = []);
   for (var i = streaks.length - 1; i > -1; i--) {
     var streak = streaks[i];
     if (diff.hasOwnProperty(streak.name)) {
       if (diff[streak.name]) {
         patch(streak, diff[streak.name]);
       } else {
-        streaks.splice(i, 1);
+        removed.push(streaks.splice(i, 1)[0].name);
       }
     }
   }
