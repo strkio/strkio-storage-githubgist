@@ -405,7 +405,8 @@ describe('GitHubGist', function () {
             }
           },
           {name: 'streak_4', data: {'2014-12-26': -1}}
-        ]
+        ],
+        _removed: ['streak_3']
       });
     });
 
