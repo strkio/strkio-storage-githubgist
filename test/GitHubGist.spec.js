@@ -369,15 +369,20 @@ describe('GitHubGist', function () {
     it('should update internal data using diff', function () {
       var data = {
         streaks: [
-          {name: 'streak_1', description: 'description'},
+          {
+            name: 'streak_1',
+            description: 'description'
+          },
           {
             name: 'streak_2',
             data: {'2014-12-24': 0, '2014-12-26': 2}
           },
-          {name: 'streak_3'}
+          {name: 'streak_3'},
+          {name: 'streak_5'}
         ]
       };
-      var updatedData = new GitHubGist(data).patch({
+      var gist = new GitHubGist(data);
+      gist.patch({
         'streak_1': {
           description: 'updated_description'
         },
@@ -393,18 +398,27 @@ describe('GitHubGist', function () {
           data: {
             '2014-12-26': '-1'
           }
-        }
+        },
+        'streak_5': null
       });
-      expect(updatedData).to.be.deep.equal({
+      gist.patch({
+        'streak_5': {}
+      });
+      expect(gist.data).to.be.deep.equal({
         streaks: [
-          {name: 'streak_1', description: 'updated_description'},
+          {
+            name: 'streak_1',
+            description: 'updated_description',
+            data: {}
+          },
           {
             name: 'streak_2',
             data: {
               '2014-12-24': 1, '2014-12-25': 1, '2014-12-26': 1
             }
           },
-          {name: 'streak_4', data: {'2014-12-26': -1}}
+          {name: 'streak_4', data: {'2014-12-26': -1}},
+          {name: 'streak_5', data: {}}
         ],
         _removed: ['streak_3']
       });

@@ -338,6 +338,7 @@ GitHubGist.prototype.patch = function (diff) {
   var removed = this.data._removed || (this.data._removed = []);
   for (var i = streaks.length - 1; i > -1; i--) {
     var streak = streaks[i];
+    streak.data || (streak.data = {});
     if (diff.hasOwnProperty(streak.name)) {
       if (diff[streak.name]) {
         patch(streak, diff[streak.name]);
@@ -349,7 +350,12 @@ GitHubGist.prototype.patch = function (diff) {
   var addedStreaks = substract(Object.keys(diff),
     streaks.map(function (streak) {return streak.name;}));
   addedStreaks.forEach(function (name) {
-    diff[name] && (streaks.push(patch({name: name, data: {}}, diff[name])));
+    if (diff[name]) {
+      streaks.push(patch({name: name, data: {}}, diff[name]));
+      if (~removed.indexOf(name)) {
+        removed.splice(removed.indexOf(name), 1);
+      }
+    }
   });
   return this.data;
 };
