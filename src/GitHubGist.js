@@ -3,6 +3,13 @@ var stringify = require('json-stable-stringify');
 
 // todo: proxy data.id onto this
 
+function cacheBuster(request) {
+  // GitHub responds with "Cache-Control:private, max-age=60, s-maxage=60"
+  // todo: force cache busting only if < max-age time has passed since update
+  request._query = [Date.now().toString()];
+  return request;
+}
+
 function GitHubGist(data, options) {
   options || (options = {});
   this.data = typeof data === 'object' ? data || {} : {id: data};
@@ -18,6 +25,7 @@ GitHubGist.fetchSize = 10;
 GitHubGist.prototype.fetch = function (callback) {
   var r = request
     .get(GitHubGist.rootURL + '/gists/' + this.data.id)
+    .use(cacheBuster)
     .set('Accept', 'application/vnd.github.v3+json');
   if (this._authorization) {
     r.set('Authorization', this._authorization);
@@ -86,6 +94,7 @@ GitHubGist.prototype._syncRemote = function (callback) {
   request
     .get(GitHubGist.rootURL + '/gists/' + self.data.id +
       '/comments?per_page=1')
+    .use(cacheBuster)
     .set('Accept', 'application/vnd.github.v3+json')
     .set('Authorization', self._authorization)
     .end(function (err, res) {
@@ -104,6 +113,7 @@ GitHubGist.prototype._syncRemote = function (callback) {
           request
             .get(GitHubGist.rootURL + '/gists/' + self.data.id +
               '/comments?per_page=' + GitHubGist.fetchSize + '&page=' + page)
+            .use(cacheBuster)
             .set('Accept', 'application/vnd.github.v3+json')
             .set('Authorization', self._authorization)
             .end(function (err, res) {
